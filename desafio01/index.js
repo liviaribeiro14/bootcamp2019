@@ -4,7 +4,7 @@ const server = express();
 server.use(express.json());
 
 const projects = [];
-var totalRequest = 0;
+let totalRequest = 0;
 
 server.use((req, res, next) => {
   console.time("Request");
@@ -35,10 +35,9 @@ function verifyIDExists(req, res, next) {
 }
 
 server.post("/projects", (req, res) => {
-  //id, title, tasks
-  const { id, title, tasks } = req.body;
+  const { id, title } = req.body;
 
-  const project = { id: id, title: title, tasks: tasks };
+  const project = { id, title, tasks: [] };
 
   projects.push(project);
 
