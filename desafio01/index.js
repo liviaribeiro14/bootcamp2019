@@ -9,7 +9,6 @@ var totalRequest = 0;
 server.use((req, res, next) => {
   console.time("Request");
 
-  //console.log(`Method: ${req.method}; URL: ${req.url}`);
   totalRequest++;
 
   console.log(`Total request: ${totalRequest}`);
@@ -47,12 +46,7 @@ server.post("/projects", (req, res) => {
 });
 
 server.post("/projects/:id/tasks", verifyIDExists, (req, res) => {
-  //const { id } = req.params;
   const { title } = req.body;
-
-  // let project = projects.find(p => {
-  //   return p.id === id;
-  // });
 
   req.project.tasks.push(title);
 
@@ -64,14 +58,9 @@ server.get("/projects", (req, res) => {
 });
 
 server.put("/projects/:id", verifyIDExists, (req, res) => {
-  const { id } = req.params;
   const { title } = req.body;
 
-  let project = projects.find(p => {
-    return p.id === id;
-  });
-
-  project.title = title;
+  req.project.title = title;
 
   res.json(projects);
 });
