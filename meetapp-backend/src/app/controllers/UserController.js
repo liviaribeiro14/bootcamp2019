@@ -15,7 +15,13 @@ class UserController{
   }
 
   async update(req, res){
+    const { email, oldPassword, password, confirmPassword } = req.body;
 
+
+
+    await User.update(req.body);
+
+    return res.json();
   }
 }
 
