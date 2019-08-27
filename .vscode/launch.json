@@ -8,7 +8,7 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceFolder}/desafio01/index.js"
+      "program": "${workspaceFolder}/gobarber/src/server.js"
     }
   ]
 }
