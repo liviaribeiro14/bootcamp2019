@@ -26,8 +26,10 @@ routes.get('/providers', ProviderController.index);
 
 routes.get('/appointments', AppointmentController.index);
 routes.post('/appointments', AppointmentController.store);
+routes.delete('/appointments/:id', AppointmentController.delete);
 
 routes.get('/schedule', ScheduleController.index);
+
 routes.get('/notification', NotificationController.index);
 routes.put('/notification/:id', NotificationController.update);
 export default routes;
