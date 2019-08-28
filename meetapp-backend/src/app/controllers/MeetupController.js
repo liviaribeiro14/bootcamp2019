@@ -47,15 +47,55 @@ class MeetupController {
       location,
       date: meetingHourStart,
       banner_id: banner_id,
-      organizer_id: req.userId,
+      organizer_id,
+    });
+
+    return res.json(meetup);
+  }
+
+  async update(req, res){
+    const schema = Yup.object().shape({
+      title: Yup.string().required(),
+      description: Yup.string().required(),
+      location: Yup.string().required(),
+      banner_id: Yup.number().required(),
+    });
+
+    if(!(await schema.isValid(req.body))){
+      return res.status(400).json({ error: 'Validation fails.' });
+    }
+
+    const meetup = await Meetup.findByPk(req.params.id);
+
+    if(req.userId !== meetup.organizer_id){
+      return res.status(400).json('You can not update this Meetup.');
+    }
+
+    if(meetup.past){
+      return res.status(400).json('Meetup has started.');
+    }
+
+    const { date } = req.body;
+    const meetingHourStart = startOfHour(parseISO(date));
+
+    if(isBefore(meetingHourStart, new Date())){
+      return res.status(401).json({ error: 'Meetups can not be stored in the past.'});
+    }
+
+    const { title, description, location, banner_id } = req.body;
+
+    await meetup.update({
+      title,
+      description,
+      location,
+      date: meetingHourStart,
+      banner_id
     });
 
     return res.json(meetup);
   }
   /**
    *
-
-O usuário também deve poder editar todos dados de meetups que ainda não aconteceram e que ele é organizador.
 
 Crie uma rota para listar os meetups que são organizados pelo usuário logado.
 
