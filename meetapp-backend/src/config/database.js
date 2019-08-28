@@ -1,3 +1,5 @@
+require('dotenv/config');
+
 module.exports = {
   dialect: 'postgres',
   host: process.env.DB_HOST,
@@ -8,5 +10,5 @@ module.exports = {
     timestamps: true,
     underscored: true,
     underscoredAll: true,
-  }
-}
+  },
+};
