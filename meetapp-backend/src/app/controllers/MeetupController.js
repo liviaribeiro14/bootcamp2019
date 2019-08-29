@@ -69,7 +69,7 @@ class MeetupController {
       location,
       date: meetingHourStart,
       banner_id: banner_id,
-      organizer_id,
+      organizer_id: req.userId,
     });
 
     return res.json(meetup);
