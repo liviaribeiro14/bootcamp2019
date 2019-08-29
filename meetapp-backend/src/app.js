@@ -30,7 +30,10 @@ class App{
   routes(){
     this.server.use(routes);
     this.server.use(Sentry.Handlers.errorHandler());
-    this.server.use('/files', express.static(path.resolve(__dirname, '..', 'tmp', 'uploads')));
+    this.server.use(
+      '/files',
+      express.static(path.resolve(__dirname, '..', 'tmp', 'uploads'))
+    );
   }
 
   exceptionHandler(){

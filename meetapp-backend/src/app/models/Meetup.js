@@ -14,12 +14,6 @@ class Meetup extends Model {
           return isBefore(this.date, new Date());
         }
       },
-      cancelable: {
-        type: Sequelize.VIRTUAL,
-        get() {
-          return isBefore(new Date(), this.date);
-        }
-      },
     },
     {
       sequelize,

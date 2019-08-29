@@ -124,13 +124,13 @@ class MeetupController {
       return res.status(401).json({ error: 'You do not have permission to cancel this Meetup.'});
     }
 
-    if(isBefore(meetup.date, new Date())){
-      return res.status(400).json({ error: 'This Meetup already happened.'});
+    if(meetup.past){
+      return res.status(400).json({ error: 'Meetup already happened.'});
     }
 
     await Meetup.destroy({
       where: {
-        id: req.userId,
+        id: meetup.id,
       }
     });
 
