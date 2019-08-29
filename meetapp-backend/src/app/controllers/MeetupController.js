@@ -116,11 +116,28 @@ class MeetupController {
 
     return res.json(meetup);
   }
+
+  async delete(req, res) {
+    const meetup = await Meetup.findByPk(req.params.id);
+
+    if(meetup.organizer_id !== req.userId){
+      return res.status(401).json({ error: 'You do not have permission to cancel this Meetup.'});
+    }
+
+    if(isBefore(meetup.date, new Date())){
+      return res.status(400).json({ error: 'This Meetup already happened.'});
+    }
+
+    await Meetup.destroy({
+      where: {
+        id: req.userId,
+      }
+    });
+
+    return res.json({ sucess: 'Meetup was cancelled.'});
+  }
   /**
    *
-
-Crie uma rota para listar os meetups que são organizados pelo usuário logado.
-
 O usuário deve poder cancelar meetups organizados por ele e que ainda não aconteceram. O cancelamento deve deletar o meetup da base de dados
 
 */
