@@ -8,7 +8,7 @@ class MeetupController {
   async index(req, res){
     const meetups = await Meetup.findAll({
       where: {
-        organizer_id: req.userId,
+        user_id: req.userId,
       },
       order: ['date'],
       attributes: ['id', 'title', 'description', 'location', 'date'],
@@ -18,7 +18,7 @@ class MeetupController {
         attributes: ['id', 'path', 'url'],
       }, {
         model: User,
-        as: 'organizer',
+        as: 'user',
         attributes: ['id', 'name', 'email'],
       }],
     });
@@ -48,11 +48,11 @@ class MeetupController {
     }
 
     /**
-     * If organizer already has a meeting in the same day and hour
+     * If user already has a meeting in the same day and hour
      */
     const findMeeting = await Meetup.findOne({
       where: {
-        organizer_id: req.userId,
+        user_id: req.userId,
         date: meetingHourStart
       },
     });
@@ -69,7 +69,7 @@ class MeetupController {
       location,
       date: meetingHourStart,
       banner_id: banner_id,
-      organizer_id: req.userId,
+      user_id: req.userId,
     });
 
     return res.json(meetup);
@@ -89,7 +89,7 @@ class MeetupController {
 
     const meetup = await Meetup.findByPk(req.params.id);
 
-    if(req.userId !== meetup.organizer_id){
+    if(req.userId !== meetup.user_id){
       return res.status(400).json('You can not update this Meetup.');
     }
 
@@ -120,7 +120,7 @@ class MeetupController {
   async delete(req, res) {
     const meetup = await Meetup.findByPk(req.params.id);
 
-    if(meetup.organizer_id !== req.userId){
+    if(meetup.user_id !== req.userId){
       return res.status(401).json({ error: 'You do not have permission to cancel this Meetup.'});
     }
 

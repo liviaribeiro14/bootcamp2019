@@ -2,6 +2,7 @@ import { isBefore } from 'date-fns';
 import * as Yup from 'yup';
 import Meetup from '../models/Meetup';
 import Subscription from '../models/Subscription';
+import User from '../models/User';
 
 class SubscriptionControler{
   async store(req, res){
@@ -15,13 +16,15 @@ class SubscriptionControler{
 
     const { meetup_id } = req.body;
 
-    const meetup = await Meetup.findByPk(meetup_id);
+    const meetup = await Meetup.findByPk(meetup_id, {
+      include: User,
+    });
 
     if(!meetup){
       return res.status(400).json({ error: 'Meetup does not exist.' });
     }
 
-    if(meetup.organizer_id === req.userId){
+    if(meetup.user_id === req.userId){
       return res.status(400).json({ error: 'You can not subscribe in a Meetup you organized.' });
     }
 
@@ -44,6 +47,7 @@ class SubscriptionControler{
       where: { user_id: req.userId },
       include:[{
         model: Meetup,
+        required: true,
         where: { date: meetup.date },
       }],
     });
