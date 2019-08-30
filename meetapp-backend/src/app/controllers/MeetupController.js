@@ -14,11 +14,9 @@ class MeetupController {
       attributes: ['id', 'title', 'description', 'location', 'date'],
       include: [{
         model: File,
-        as: 'banner',
         attributes: ['id', 'path', 'url'],
       }, {
         model: User,
-        as: 'user',
         attributes: ['id', 'name', 'email'],
       }],
     });

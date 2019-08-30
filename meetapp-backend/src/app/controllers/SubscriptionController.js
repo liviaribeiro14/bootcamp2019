@@ -56,12 +56,12 @@ class SubscriptionControler{
       return res.status(400).json('You have another Meetup in the same date.');
     }
 
-    await Subscription.create({
+    const subscription = await Subscription.create({
       meetup_id: meetup.id,
       user_id: req.userId,
     });
 
-    return res.json();
+    return res.json(subscription);
   }
 }
 
