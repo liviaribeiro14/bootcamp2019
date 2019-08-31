@@ -23,6 +23,7 @@ class MeetupController {
 
     return res.json(meetups);
   }
+
   async store(req, res) {
     const schema = Yup.object().shape({
       title: Yup.string().required(),

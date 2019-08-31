@@ -1,5 +1,4 @@
-import { isBefore } from 'date-fns';
-import * as Yup from 'yup';
+import { Op } from 'sequelize';
 import Meetup from '../models/Meetup';
 import Subscription from '../models/Subscription';
 import User from '../models/User';
@@ -7,18 +6,26 @@ import Queue from '../../lib/Queue';
 import SubscriptionMail from '../jobs/SubscriptionMail';
 
 class SubscriptionControler{
-  async store(req, res){
-    const schema = Yup.object().shape({
-      meetup_id: Yup.number().required(),
+  async index(req, res){
+    const subsInMeetups = await Subscription.findAll({
+      where: {
+        user_id: req.userId,
+      },
+      include: [{
+        model: Meetup,
+        where: {
+          date: { [Op.gt]: new Date(), }
+        },
+        required: true,
+      }],
+      order: [[Meetup, 'date']]
     });
 
-    if(!(await schema.isValid(req.body))) {
-      return res.status(401).json('Validation fails.');
-    }
+    return res.json(subsInMeetups);
+  }
 
-    const { meetup_id } = req.body;
-
-    const meetup = await Meetup.findByPk(meetup_id, {
+  async store(req, res){
+    const meetup = await Meetup.findByPk(req.params.id, {
       include: User,
     });
 
@@ -30,7 +37,7 @@ class SubscriptionControler{
       return res.status(400).json({ error: 'You can not subscribe in a Meetup you organized.' });
     }
 
-    if(isBefore(meetup.date, new Date())){
+    if(meetup.past){
       return res.status(400).json({ error: 'Meetup already happened.' });
     }
 
