@@ -1,14 +1,42 @@
-body {
-  background: #f2f2f2;
-  font-family: Arial, Helvetica, sans-serif;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.header {
-  position: absolute;
-  left: 0%;
-  right: 0%;
-  top: 0%;
-  bottom: 93.75%;
+body {
+  background: #f2f2f2;
+  font-family: 'Helvetica', Arial, sans-serif;
+  /* para dar suavidade ao texto */
+  text-rendering: optimizeLegibility !important;
+  -webkit-font-smoothing: antialiased !important;
+}
 
+header {
+  width: 1024px;
+  height: 64px;
   background: #4a90e2;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.13);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin: 0 auto;
+  padding: 0 42px;
+}
+
+header div.profile {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+header div.profile a {
+  text-decoration: none;
+
+  font-size: 15px;
+  color: #fff;
+
+  margin-right: 16px;
 }
