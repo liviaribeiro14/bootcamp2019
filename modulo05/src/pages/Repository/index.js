@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FaList, FaSpinner } from 'react-icons/fa';
+import { FaList, FaSpinner, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import api from '../../services/api';
@@ -12,6 +12,7 @@ import {
   IssueList,
   IssueState,
   SubmitButton,
+  Pagination,
 } from './styles';
 
 export default class Repository extends Component {
@@ -31,27 +32,9 @@ export default class Repository extends Component {
   };
 
   async componentDidMount() {
-    const { match } = this.props;
+    const { issueState } = this.setState;
 
-    const repoName = decodeURIComponent(match.params.repository);
-
-    const { issueState } = this.state;
-
-    const [repository, issues] = await Promise.all([
-      api.get(`/repos/${repoName}`),
-      api.get(`/repos/${repoName}/issues`, {
-        params: {
-          state: issueState,
-          page: 1,
-        },
-      }),
-    ]);
-
-    this.setState({
-      repository: repository.data,
-      issues: issues.data,
-      loading: false,
-    });
+    this.callRepository(issueState, 1);
   }
 
   handleSelectChange = e => {
@@ -62,23 +45,33 @@ export default class Repository extends Component {
     e.preventDefault();
     this.setState({ loading: true });
 
-    const { match } = this.props;
-    const repoName = decodeURIComponent(match.params.repository);
-
     const { issueState } = this.state;
 
-    const issues = await api.get(`/repos/${repoName}/issues`, {
-      params: {
-        state: issueState,
-        page: 1,
-      },
-    });
+    this.callRepository(issueState, 1);
+  };
+
+  async callRepository(issueState, page) {
+    const { match } = this.props;
+
+    const repoName = decodeURIComponent(match.params.repository);
+
+    const [repository, issues] = await Promise.all([
+      api.get(`/repos/${repoName}`),
+      api.get(`/repos/${repoName}/issues`, {
+        params: {
+          state: issueState,
+          per_page: 2,
+          page,
+        },
+      }),
+    ]);
 
     this.setState({
+      repository: repository.data,
       issues: issues.data,
       loading: false,
     });
-  };
+  }
 
   render() {
     const { repository, issues, loading, issueState } = this.state;
@@ -126,6 +119,22 @@ export default class Repository extends Component {
               </li>
             ))}
           </IssueList>
+          <Pagination>
+            <SubmitButton>
+              {loading ? (
+                <FaSpinner color="#fff" size={14} />
+              ) : (
+                <FaArrowLeft color="#fff" size={14} />
+              )}
+            </SubmitButton>
+            <SubmitButton>
+              {loading ? (
+                <FaSpinner color="#fff" size={14} />
+              ) : (
+                <FaArrowRight color="#fff" size={14} />
+              )}
+            </SubmitButton>
+          </Pagination>
         </Form>
       </Container>
     );

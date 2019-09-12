@@ -159,3 +159,10 @@ export const SubmitButton = styled.button.attrs(props => ({
       }
     `}
 `;
+
+export const Pagination = styled.div`
+  margin-top: 5px;
+  height: 40px;
+  display: flex;
+  justify-content: space-around;
+`;
