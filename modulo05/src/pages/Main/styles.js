@@ -15,7 +15,7 @@ export const Form = styled.form`
     border-radius: 4px;
     font-size: 16px;
 
-    border-color: ${props => (props.repoError ? '#FF6347' : '#eee')};
+    border-color: ${props => (props.repoError ? '	#FF6347' : '#eee')};
   }
 `;
 

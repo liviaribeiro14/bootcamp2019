@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 
 export const Loading = styled.div`
   color: #fff;
@@ -14,6 +14,8 @@ export const Owner = styled.header`
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #eee;
 
   a {
     color: #7159c1;
@@ -42,10 +44,22 @@ export const Owner = styled.header`
   }
 `;
 
+export const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+
+  select {
+    background: #fff;
+    color: #666;
+    border: 1px solid #7159c1;
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+`;
+
 export const IssueList = styled.ul`
-  padding-top: 30px;
-  margin-top: 30px;
-  border-top: 1px solid #eee;
+  padding-top: 5px;
   list-style: none;
 
   li {
@@ -100,4 +114,48 @@ export const IssueList = styled.ul`
       }
     }
   }
+`;
+
+export const IssueState = styled.div`
+  margin-top: 5px;
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const rotate = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+export const SubmitButton = styled.button.attrs(props => ({
+  type: 'submit',
+  disabled: props.loading,
+}))`
+  background: #7159c1;
+  border: 0;
+  padding: 0 15px;
+  margin-left: 10px;
+  border-radius: 4px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &[disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  ${props =>
+    props.loading &&
+    css`
+      svg {
+        animation: ${rotate} 2s linear infinite;
+      }
+    `}
 `;

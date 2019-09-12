@@ -1,10 +1,18 @@
 import React, { Component } from 'react';
+import { FaList, FaSpinner } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import api from '../../services/api';
 
 import Container from '../../components/Container';
-import { Loading, Owner, IssueList } from './styles';
+import {
+  Loading,
+  Owner,
+  Form,
+  IssueList,
+  IssueState,
+  SubmitButton,
+} from './styles';
 
 export default class Repository extends Component {
   static propTypes = {
@@ -19,6 +27,7 @@ export default class Repository extends Component {
     repository: {},
     issues: [],
     loading: true,
+    issueState: 'all',
   };
 
   async componentDidMount() {
@@ -26,12 +35,14 @@ export default class Repository extends Component {
 
     const repoName = decodeURIComponent(match.params.repository);
 
+    const { issueState } = this.state;
+
     const [repository, issues] = await Promise.all([
       api.get(`/repos/${repoName}`),
       api.get(`/repos/${repoName}/issues`, {
         params: {
-          state: 'open',
-          per_page: 5,
+          state: issueState,
+          page: 1,
         },
       }),
     ]);
@@ -43,8 +54,34 @@ export default class Repository extends Component {
     });
   }
 
+  handleSelectChange = e => {
+    this.setState({ issueState: e.target.value });
+  };
+
+  handleSubmit = async e => {
+    e.preventDefault();
+    this.setState({ loading: true });
+
+    const { match } = this.props;
+    const repoName = decodeURIComponent(match.params.repository);
+
+    const { issueState } = this.state;
+
+    const issues = await api.get(`/repos/${repoName}/issues`, {
+      params: {
+        state: issueState,
+        page: 1,
+      },
+    });
+
+    this.setState({
+      issues: issues.data,
+      loading: false,
+    });
+  };
+
   render() {
-    const { repository, issues, loading } = this.state;
+    const { repository, issues, loading, issueState } = this.state;
 
     if (loading) {
       return <Loading>Carregando</Loading>;
@@ -58,23 +95,38 @@ export default class Repository extends Component {
           <h1>{repository.name}</h1>
           <p>{repository.description}</p>
         </Owner>
-
-        <IssueList>
-          {issues.map(issue => (
-            <li key={String(issue.id)}>
-              <img src={issue.user.avatar_url} alt={issue.user.login} />
-              <div>
-                <strong>
-                  <a href={issue.html_url}>{issue.title}</a>
-                  {issue.labels.map(label => (
-                    <span key={String(label.id)}>{label.name}</span>
-                  ))}
-                </strong>
-                <p>{issue.user.login}</p>
-              </div>
-            </li>
-          ))}
-        </IssueList>
+        <Form onSubmit={this.handleSubmit}>
+          <IssueState>
+            <select onChange={this.handleSelectChange} value={issueState}>
+              <option value="all">All</option>
+              <option value="open">Open</option>
+              <option value="closed">Closed</option>
+            </select>
+            <SubmitButton loading={loading}>
+              {loading ? (
+                <FaSpinner color="#fff" size={14} />
+              ) : (
+                <FaList color="#fff" size={14} />
+              )}
+            </SubmitButton>
+          </IssueState>
+          <IssueList>
+            {issues.map(issue => (
+              <li key={String(issue.id)}>
+                <img src={issue.user.avatar_url} alt={issue.user.login} />
+                <div>
+                  <strong>
+                    <a href={issue.html_url}>{issue.title}</a>
+                    {issue.labels.map(label => (
+                      <span key={String(label.id)}>{label.name}</span>
+                    ))}
+                  </strong>
+                  <p>{issue.user.login}</p>
+                </div>
+              </li>
+            ))}
+          </IssueList>
+        </Form>
       </Container>
     );
   }
