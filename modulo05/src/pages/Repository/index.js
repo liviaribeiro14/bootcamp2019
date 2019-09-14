@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { FaList, FaSpinner, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import api from '../../services/api';
@@ -11,7 +10,6 @@ import {
   Form,
   IssueList,
   IssueState,
-  SubmitButton,
   Pagination,
 } from './styles';
 
@@ -29,28 +27,12 @@ export default class Repository extends Component {
     issues: [],
     loading: true,
     issueState: 'all',
+    page: 1,
   };
 
   async componentDidMount() {
-    const { issueState } = this.setState;
+    const { issueState, page } = this.setState;
 
-    this.callRepository(issueState, 1);
-  }
-
-  handleSelectChange = e => {
-    this.setState({ issueState: e.target.value });
-  };
-
-  handleSubmit = async e => {
-    e.preventDefault();
-    this.setState({ loading: true });
-
-    const { issueState } = this.state;
-
-    this.callRepository(issueState, 1);
-  };
-
-  async callRepository(issueState, page) {
     const { match } = this.props;
 
     const repoName = decodeURIComponent(match.params.repository);
@@ -60,8 +42,8 @@ export default class Repository extends Component {
       api.get(`/repos/${repoName}/issues`, {
         params: {
           state: issueState,
-          per_page: 2,
           page,
+          per_page: 5,
         },
       }),
     ]);
@@ -73,8 +55,44 @@ export default class Repository extends Component {
     });
   }
 
+  callIssues = async () => {
+    const { match } = this.props;
+
+    const repoName = decodeURIComponent(match.params.repository);
+
+    const { page, issueState } = this.state;
+
+    const issues = await api.get(`/repos/${repoName}/issues`, {
+      params: {
+        state: issueState,
+        per_page: 5,
+        page,
+      },
+    });
+
+    this.setState({
+      issues: issues.data,
+      loading: false,
+    });
+  };
+
+  handleSelectChange = async e => {
+    await this.setState({ issueState: e.target.value, page: 1 });
+    this.callIssues();
+  };
+
+  handlePagination = async action => {
+    const { page } = this.state;
+
+    await this.setState({
+      page: action === 'next' ? page + 1 : page - 1,
+    });
+
+    this.callIssues();
+  };
+
   render() {
-    const { repository, issues, loading, issueState } = this.state;
+    const { repository, issues, loading, issueState, page } = this.state;
 
     if (loading) {
       return <Loading>Carregando</Loading>;
@@ -90,18 +108,15 @@ export default class Repository extends Component {
         </Owner>
         <Form onSubmit={this.handleSubmit}>
           <IssueState>
-            <select onChange={this.handleSelectChange} value={issueState}>
+            <select
+              onChange={this.handleSelectChange}
+              value={issueState}
+              disabled={issues.length === 0}
+            >
               <option value="all">All</option>
               <option value="open">Open</option>
               <option value="closed">Closed</option>
             </select>
-            <SubmitButton loading={loading}>
-              {loading ? (
-                <FaSpinner color="#fff" size={14} />
-              ) : (
-                <FaList color="#fff" size={14} />
-              )}
-            </SubmitButton>
           </IssueState>
           <IssueList>
             {issues.map(issue => (
@@ -120,20 +135,21 @@ export default class Repository extends Component {
             ))}
           </IssueList>
           <Pagination>
-            <SubmitButton>
-              {loading ? (
-                <FaSpinner color="#fff" size={14} />
-              ) : (
-                <FaArrowLeft color="#fff" size={14} />
-              )}
-            </SubmitButton>
-            <SubmitButton>
-              {loading ? (
-                <FaSpinner color="#fff" size={14} />
-              ) : (
-                <FaArrowRight color="#fff" size={14} />
-              )}
-            </SubmitButton>
+            <button
+              type="button"
+              onClick={() => this.handlePagination('previous')}
+              disabled={page < 2}
+            >
+              Previous
+            </button>
+            <span>{page}</span>
+            <button
+              type="button"
+              onClick={() => this.handlePagination('next')}
+              disabled={issues.length < 5}
+            >
+              Next
+            </button>
           </Pagination>
         </Form>
       </Container>

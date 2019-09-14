@@ -1,4 +1,4 @@
-import styled, { keyframes, css } from 'styled-components';
+import styled from 'styled-components';
 
 export const Loading = styled.div`
   color: #fff;
@@ -122,47 +122,24 @@ export const IssueState = styled.div`
   justify-content: flex-end;
 `;
 
-const rotate = keyframes`
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-`;
-
-export const SubmitButton = styled.button.attrs(props => ({
-  type: 'submit',
-  disabled: props.loading,
-}))`
-  background: #7159c1;
-  border: 0;
-  padding: 0 15px;
-  margin-left: 10px;
-  border-radius: 4px;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  &[disabled] {
-    cursor: not-allowed;
-    opacity: 0.6;
-  }
-
-  ${props =>
-    props.loading &&
-    css`
-      svg {
-        animation: ${rotate} 2s linear infinite;
-      }
-    `}
-`;
-
 export const Pagination = styled.div`
-  margin-top: 5px;
+  margin-top: 10px;
   height: 40px;
   display: flex;
+  align-items: center;
   justify-content: space-around;
+  font-size: 16px;
+
+  button {
+    color: #7159c1;
+    font-size: 16px;
+    cursor: pointer;
+    border: 0;
+    background: #fff;
+
+    &[disabled] {
+      cursor: not-allowed;
+      color: #ccc;
+    }
+  }
 `;
