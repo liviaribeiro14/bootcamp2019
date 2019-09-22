@@ -16,6 +16,7 @@ import {
   Title,
   Author,
   NoStars,
+  FootLoading,
 } from './styles';
 
 export default class User extends Component {
@@ -75,6 +76,20 @@ export default class User extends Component {
     navigation.navigate('FavRepository', { repository });
   };
 
+  showLoadingInList = () => {
+    const { loading, stars } = this.state;
+
+    if (loading && stars.length !== 0) {
+      return (
+        <FootLoading>
+          <ActivityIndicator color="#ccc" />
+        </FootLoading>
+      );
+    }
+
+    return null;
+  };
+
   render() {
     const { navigation } = this.props;
     const { stars, refreshing, loading } = this.state;
@@ -109,6 +124,7 @@ export default class User extends Component {
               </Repository>
             </Starred>
           )}
+          ListFooterComponent={() => this.showLoadingInList()}
           onEndReachedThreshold={0.2}
           onEndReached={this.loadMoreStars}
           refreshing={refreshing}

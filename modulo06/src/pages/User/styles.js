@@ -85,3 +85,8 @@ export const NoStars = styled.Text`
   text-align: center;
   color: #ccc;
 `;
+
+export const FootLoading = styled.View`
+  align-items: center;
+  justify-content: center;
+`;
